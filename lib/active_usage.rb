@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "activeusage/version"
+require_relative "active_usage/version"
 
-module Activeusage
+module ActiveUsage
   class Error < StandardError; end
   # Your code goes here...
 end

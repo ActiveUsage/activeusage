@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe Activeusage do
+RSpec.describe ActiveUsage do
   it "has a version number" do
-    expect(Activeusage::VERSION).not_to be nil
+    expect(ActiveUsage::VERSION).not_to be nil
   end
 
   it "does something useful" do
