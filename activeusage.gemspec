@@ -17,6 +17,7 @@ Gem::Specification.new do |spec|
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/ActiveUsage/activeusage/tree/#{ActiveUsage::VERSION}"
   spec.metadata["changelog_uri"] = "https://github.com/ActiveUsage/activeusage/tree/#{ActiveUsage::VERSION}/CHANGELOG.md"
+  spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files = Dir["CHANGELOG.md", "LICENSE.txt", "README.md", "lib/**/*"]
   spec.require_path = "lib"
