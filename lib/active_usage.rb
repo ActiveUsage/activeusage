@@ -1,8 +1,17 @@
 # frozen_string_literal: true
 
 require_relative "active_usage/version"
+require_relative "active_usage/configuration"
 
+# Top-level namespace for the ActiveUsage gem.
 module ActiveUsage
-  class Error < StandardError; end
-  # Your code goes here...
+  class << self
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    def configure
+      yield configuration
+    end
+  end
 end
