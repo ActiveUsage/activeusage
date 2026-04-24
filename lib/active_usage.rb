@@ -8,6 +8,7 @@ require_relative "active_usage/configuration"
 require_relative "active_usage/type/hash"
 require_relative "active_usage/event"
 require_relative "active_usage/context"
+require_relative "active_usage/time_window"
 
 # Top-level namespace for the ActiveUsage gem.
 module ActiveUsage
