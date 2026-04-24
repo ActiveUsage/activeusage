@@ -23,4 +23,5 @@ Gem::Specification.new do |spec|
   spec.require_path = "lib"
 
   spec.add_dependency "activemodel", ">= 7.2"
+  spec.add_dependency "activesupport", ">= 7.2"
 end

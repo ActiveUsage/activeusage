@@ -3,6 +3,7 @@ PATH
   specs:
     activeusage (0.1.0)
       activemodel (>= 7.2)
+      activesupport (>= 7.2)
 
 GEM
   remote: https://rubygems.org/
