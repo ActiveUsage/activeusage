@@ -10,3 +10,6 @@ Style/StringLiteralsInInterpolation:
 
 Metrics/BlockLength:
   Enabled: false
+
+Style/Documentation:
+  Enabled: false
