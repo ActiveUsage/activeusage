@@ -14,4 +14,10 @@ RSpec.describe ActiveUsage::Configuration do
       expect(configuration.store).to eq(:active_record)
     end
   end
+
+  describe "#tags" do
+    it "defaults to empty hash" do
+      expect(configuration.tags).to eq({})
+    end
+  end
 end
