@@ -4,6 +4,7 @@ require "active_model"
 
 require_relative "active_usage/version"
 require_relative "active_usage/configuration"
+require_relative "active_usage/type/hash"
 
 # Top-level namespace for the ActiveUsage gem.
 module ActiveUsage
