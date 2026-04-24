@@ -19,6 +19,7 @@ RSpec.describe ActiveUsage::Event do
       expect(subject.memory_bytes).to be_nil
       expect(subject.tags).to be_nil
       expect(subject.metadata).to be_nil
+      expect(subject.window_started_at).to be_nil
     end
   end
 

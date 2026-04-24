@@ -20,5 +20,6 @@ module ActiveUsage
     attribute :memory_bytes, :integer
     attribute :tags, :hash
     attribute :metadata, :hash
+    attribute :window_started_at, :datetime
   end
 end
