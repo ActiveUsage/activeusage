@@ -21,4 +21,6 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir["CHANGELOG.md", "LICENSE.txt", "README.md", "lib/**/*"]
   spec.require_path = "lib"
+
+  spec.add_dependency "activemodel", ">= 7.2"
 end

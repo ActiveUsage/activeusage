@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "active_model"
+
 require_relative "active_usage/version"
 require_relative "active_usage/configuration"
 
