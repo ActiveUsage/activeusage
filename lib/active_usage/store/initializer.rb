@@ -8,7 +8,7 @@ module ActiveUsage
       end
 
       def call
-        Buffered.new(store)
+        Buffer.new(store)
       end
 
       private
