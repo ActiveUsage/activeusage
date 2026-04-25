@@ -9,6 +9,7 @@ require_relative "active_usage/type/hash"
 require_relative "active_usage/event"
 require_relative "active_usage/context"
 require_relative "active_usage/time_window"
+require_relative "active_usage/collector"
 require_relative "active_usage/pipeline"
 require_relative "active_usage/store/base"
 require_relative "active_usage/store/buffer"
@@ -28,6 +29,14 @@ module ActiveUsage
 
     def store
       @store ||= Store::Initializer.new(configuration)
+    end
+
+    def collector
+      @collector ||= Collector.new(configuration)
+    end
+
+    def record(**attributes)
+      collector.record(**attributes)
     end
   end
 end
