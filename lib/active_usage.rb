@@ -3,6 +3,10 @@
 require "active_model"
 require "active_support"
 
+require "json"
+require "net/http"
+require "uri"
+
 require_relative "active_usage/version"
 require_relative "active_usage/configuration"
 require_relative "active_usage/type/hash"

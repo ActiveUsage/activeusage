@@ -18,6 +18,7 @@ module ActiveUsage
         when :active_usage
           Http.new(
             @configuration.application_name,
+            @configuration.url,
             @configuration.api_key
           )
         end
