@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ActiveUsage
-  # Represents a single tracked usage event with timing, resource, and metadata attributes.
+  # Represents a single tracked usage event with timing, resource.
   class Event
     include ActiveModel::Model
     include ActiveModel::Attributes
@@ -19,7 +19,7 @@ module ActiveUsage
     attribute :cpu_time_ms, :float
     attribute :memory_bytes, :integer
     attribute :tags, :hash
-    attribute :metadata, :hash
     attribute :window_started_at, :datetime
+    attribute :sql_queries, :array
   end
 end

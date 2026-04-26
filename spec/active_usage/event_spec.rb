@@ -18,7 +18,6 @@ RSpec.describe ActiveUsage::Event do
       expect(subject.cpu_time_ms).to be_nil
       expect(subject.memory_bytes).to be_nil
       expect(subject.tags).to be_nil
-      expect(subject.metadata).to be_nil
       expect(subject.window_started_at).to be_nil
     end
   end
@@ -62,12 +61,6 @@ RSpec.describe ActiveUsage::Event do
       subject.tags = { "env" => "production", "region" => "eu" }
 
       expect(subject.tags).to eq(env: "production", region: "eu")
-    end
-
-    it "symbolizes metadata keys" do
-      subject.metadata = { "user_id" => 42 }
-
-      expect(subject.metadata).to eq(user_id: 42)
     end
 
     it "rejects non-hash value for tags" do

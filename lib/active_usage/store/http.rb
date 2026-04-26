@@ -52,6 +52,14 @@ module ActiveUsage
 
         Client.new(@application_name, @url, @api_key, events).call
       end
+
+      def clear!
+        0
+      end
+
+      def flush!; end
+
+      def shutdown!; end
     end
   end
 end

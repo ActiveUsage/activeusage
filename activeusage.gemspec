@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files = Dir["CHANGELOG.md", "LICENSE.txt", "README.md", "lib/**/*"]
-  spec.require_path = "lib"
+  spec.require_paths = ["lib"]
 
   spec.add_dependency "activemodel", ">= 7.2"
   spec.add_dependency "activesupport", ">= 7.2"

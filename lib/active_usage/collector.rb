@@ -14,7 +14,6 @@ module ActiveUsage
         started_at: started_at,
         finished_at: finished_at,
         tags: @configuration.tags.merge(Context.tags).merge(attributes.delete(:tags) || {}),
-        metadata: attributes.delete(:metadata) || {},
         **attributes
       )
 
