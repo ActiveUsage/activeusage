@@ -12,7 +12,7 @@ require_relative "active_usage/configuration"
 require_relative "active_usage/type/hash"
 require_relative "active_usage/type/array"
 require_relative "active_usage/event"
-require_relative "active_usage/context"
+require_relative "active_usage/tags"
 require_relative "active_usage/time_window"
 require_relative "active_usage/collector"
 require_relative "active_usage/pipeline"
@@ -59,6 +59,10 @@ module ActiveUsage
 
     def track(name, tags: {}, &)
       Tracker.new(name, tags).call(&)
+    end
+
+    def tags
+      @tags ||= Tags.new(configuration.tags)
     end
   end
 end

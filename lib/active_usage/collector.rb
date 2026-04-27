@@ -13,7 +13,7 @@ module ActiveUsage
         name: name,
         started_at: started_at,
         finished_at: finished_at,
-        tags: @configuration.tags.merge(Context.tags).merge(attributes.delete(:tags) || {}),
+        tags: ActiveUsage.tags.tag(attributes.delete(:tags) || {}),
         **attributes
       )
 

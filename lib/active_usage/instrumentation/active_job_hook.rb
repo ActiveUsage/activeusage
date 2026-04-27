@@ -7,7 +7,7 @@ module ActiveUsage
 
       included do
         around_perform do |job, block|
-          ActiveUsage::Context.delete
+          ActiveUsage.tags.flush
           ActiveUsage::Instrumentation::RuntimeState.clear_sql_state
           started_at = Time.current
 
@@ -28,7 +28,7 @@ module ActiveUsage
           )
           ActiveUsage.store.flush!
           ActiveUsage::Instrumentation::RuntimeState.clear_sql_state
-          ActiveUsage::Context.delete
+          ActiveUsage.tags.flush
         end
       end
     end

@@ -8,10 +8,10 @@ module ActiveUsage
       end
 
       def call(env)
-        ActiveUsage::Context.delete
+        ActiveUsage.tags.flush
         @app.call(env)
       ensure
-        ActiveUsage::Context.delete
+        ActiveUsage.tags.flush
       end
     end
   end
