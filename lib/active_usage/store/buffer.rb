@@ -41,20 +41,18 @@ module ActiveUsage
         self.class.track(self)
       end
 
-      def record(events)
+      def record(event)
         queue_mutex.synchronize do
           if queue.size >= max_queue_size
             increment_dropped_events!
-            return events
+            return event
           end
 
-          events.each do |event|
-            queue << event
-          end
+          queue << event
         end
 
         flush! if queue.size >= batch_size
-        events
+        event
       end
 
       def clear!

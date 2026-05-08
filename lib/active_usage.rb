@@ -51,7 +51,7 @@ module ActiveUsage
         **attributes
       )
 
-      store.record([event])
+      store.record(event)
       ActiveSupport::Notifications.instrument("activeusage.event_recorded", event: event)
 
       event
