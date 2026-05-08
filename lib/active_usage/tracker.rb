@@ -24,7 +24,6 @@ module ActiveUsage
     def sql_listener
       lambda do |*args|
         event = ActiveSupport::Notifications::Event.new(*args)
-        next if event.payload[:name].to_s.match?(/\ASCHEMA\z/i)
 
         @sql_duration_ms += event.duration
         @sql_calls += 1

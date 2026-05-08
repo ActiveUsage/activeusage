@@ -12,7 +12,7 @@ module ActiveUsage
 
       def subscribe_to_sql
         ActiveSupport::Notifications.subscribe("sql.active_record") do |_name, started, finished, _id, payload|
-          next if payload[:cached] || payload[:name] == "SCHEMA"
+          next if payload[:cached]
 
           ActiveUsage::Instrumentation::RuntimeState.add_sql_event(
             payload,
