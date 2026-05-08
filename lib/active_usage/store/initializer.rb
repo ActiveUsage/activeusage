@@ -17,7 +17,6 @@ module ActiveUsage
         case @configuration.store
         when :active_usage
           Http.new(
-            @configuration.application_name,
             @configuration.url,
             @configuration.api_key
           )

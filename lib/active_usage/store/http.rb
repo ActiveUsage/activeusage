@@ -4,8 +4,7 @@ module ActiveUsage
   module Store
     class Http < Base
       class Client
-        def initialize(application_name, url, api_key, events)
-          @application_name = application_name
+        def initialize(url, api_key, events)
           @uri = URI(url)
           @api_key = api_key
           @events = events
@@ -26,7 +25,6 @@ module ActiveUsage
           request["Content-Type"] = "application/json"
           request["Authorization"] = "Bearer #{@api_key}"
           request.body = JSON.generate(
-            application_name: @application_name,
             events: @events.map(&:attributes)
           )
           request
@@ -41,8 +39,7 @@ module ActiveUsage
         end
       end
 
-      def initialize(application_name, url, api_key)
-        @application_name = application_name
+      def initialize(url, api_key)
         @url = url
         @api_key = api_key
       end
@@ -50,7 +47,7 @@ module ActiveUsage
       def record(events)
         return true if events.empty?
 
-        Client.new(@application_name, @url, @api_key, events).call
+        Client.new(@url, @api_key, events).call
       end
 
       def clear!

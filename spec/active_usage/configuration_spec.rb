@@ -33,18 +33,6 @@ RSpec.describe ActiveUsage::Configuration do
     end
   end
 
-  describe "#application_name" do
-    it "defaults to 'ActiveUsage'" do
-      expect(configuration.application_name).to eq("ActiveUsage")
-    end
-
-    it "can be changed" do
-      configuration.application_name = "MyApp"
-
-      expect(configuration.application_name).to eq("MyApp")
-    end
-  end
-
   describe "#api_key" do
     it "defaults to nil" do
       expect(configuration.api_key).to be_nil
