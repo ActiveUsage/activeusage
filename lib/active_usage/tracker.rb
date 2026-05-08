@@ -40,7 +40,7 @@ module ActiveUsage
         duration_ms: ActiveUsage::TimeHelpers.duration_ms(@started_at, finished_at),
         sql_duration_ms: @sql_duration_ms.round(3),
         sql_calls: @sql_calls,
-        tags: ActiveUsage.tags.tag(@tags)
+        tags: @tags
       }
     end
 
