@@ -57,13 +57,6 @@ module ActiveUsage
       event
     end
 
-    def attach_subscribers!
-      return if @subscribers_attached
-
-      ActiveUsage::Instrumentation::Subscriber.new(config: configuration).attach!
-      @subscribers_attached = true
-    end
-
     def track(name, tags: {}, &)
       Tracker.new(name, tags).call(&)
     end

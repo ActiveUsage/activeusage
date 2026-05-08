@@ -3,18 +3,12 @@
 module ActiveUsage
   module Instrumentation
     class Subscriber
-      def initialize(config:)
-        @config = config
-      end
-
-      def attach!
+      def call
         subscribe_to_sql
         subscribe_to_actions
       end
 
       private
-
-      attr_reader :config
 
       def subscribe_to_sql
         ActiveSupport::Notifications.subscribe("sql.active_record") do |_name, started, finished, _id, payload|

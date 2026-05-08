@@ -13,7 +13,7 @@ module ActiveUsage
     end
 
     config.after_initialize do
-      ActiveUsage.attach_subscribers!
+      ActiveUsage::Instrumentation::Subscriber.new.call
     end
   end
 end
