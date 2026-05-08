@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe ActiveUsage::TimeWindow do
-  subject { described_class.new(event, size) }
-
-  let(:event) do
-    instance_double(ActiveUsage::Event, finished_at: finished_at)
-  end
+  subject { described_class.new(finished_at, size) }
 
   describe "#call" do
     context "when finished_at falls on the boundary" do

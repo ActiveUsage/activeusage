@@ -14,8 +14,6 @@ require_relative "active_usage/type/array"
 require_relative "active_usage/event"
 require_relative "active_usage/tags"
 require_relative "active_usage/time_window"
-require_relative "active_usage/collector"
-require_relative "active_usage/pipeline"
 require_relative "active_usage/store/base"
 require_relative "active_usage/store/buffer"
 require_relative "active_usage/store/http"
@@ -42,12 +40,21 @@ module ActiveUsage
       @store ||= Store::Initializer.new(configuration).call
     end
 
-    def collector
-      @collector ||= Collector.new(configuration)
-    end
+    def record(type:, name:, started_at:, finished_at:, **attributes)
+      event = Event.new(
+        type: type,
+        name: name,
+        started_at: started_at,
+        finished_at: finished_at,
+        tags: tags.current.merge(attributes.delete(:tags) || {}),
+        window_started_at: TimeWindow.new(finished_at, configuration.window_size),
+        **attributes
+      )
 
-    def record(**attributes)
-      collector.record(**attributes)
+      store.record([event])
+      ActiveSupport::Notifications.instrument("activeusage.event_recorded", event: event)
+
+      event
     end
 
     def attach_subscribers!

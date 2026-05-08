@@ -2,8 +2,8 @@
 
 module ActiveUsage
   class TimeWindow
-    def initialize(event, size)
-      @event = event
+    def initialize(finished_at, size)
+      @finished_at = finished_at
       @size = size
     end
 
@@ -14,7 +14,7 @@ module ActiveUsage
     private
 
     def epoch
-      @epoch ||= @event.finished_at.to_i
+      @epoch ||= @finished_at.to_i
     end
   end
 end
