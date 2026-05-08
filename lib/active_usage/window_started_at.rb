@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 module ActiveUsage
-  class TimeWindow
+  class WindowStartedAt
     def initialize(finished_at, size)
       @finished_at = finished_at
       @size = size
     end
 
     def call
-      epoch - (epoch % @size)
+      Time.at(epoch - (epoch % @size))
     end
 
     private

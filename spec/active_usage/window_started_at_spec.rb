@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe ActiveUsage::TimeWindow do
+RSpec.describe ActiveUsage::WindowStartedAt do
   subject { described_class.new(finished_at, size) }
 
   describe "#call" do
@@ -9,7 +9,7 @@ RSpec.describe ActiveUsage::TimeWindow do
       let(:size) { 60 }
 
       it "returns the start of the bucket" do
-        expect(subject.call).to eq(1_020)
+        expect(subject.call).to eq(Time.at(1_020))
       end
     end
 
@@ -18,7 +18,7 @@ RSpec.describe ActiveUsage::TimeWindow do
       let(:size) { 60 }
 
       it "truncates to the nearest lower multiple of size" do
-        expect(subject.call).to eq(1_020)
+        expect(subject.call).to eq(Time.at(1_020))
       end
     end
 
@@ -27,7 +27,7 @@ RSpec.describe ActiveUsage::TimeWindow do
       let(:size) { 600 }
 
       it "just works" do
-        expect(subject.call).to eq(1_200)
+        expect(subject.call).to eq(Time.at(1_200))
       end
     end
 
@@ -36,7 +36,7 @@ RSpec.describe ActiveUsage::TimeWindow do
       let(:size) { 300 }
 
       it "just works" do
-        expect(subject.call).to eq(1_700_000_123 - (1_700_000_123 % 300))
+        expect(subject.call).to eq(Time.at(1_700_000_123 - (1_700_000_123 % 300)))
       end
     end
   end

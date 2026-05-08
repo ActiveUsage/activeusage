@@ -13,7 +13,7 @@ require_relative "active_usage/type/hash"
 require_relative "active_usage/type/array"
 require_relative "active_usage/event"
 require_relative "active_usage/tags"
-require_relative "active_usage/time_window"
+require_relative "active_usage/window_started_at"
 require_relative "active_usage/store/base"
 require_relative "active_usage/store/buffer"
 require_relative "active_usage/store/http"
@@ -47,7 +47,7 @@ module ActiveUsage
         started_at: started_at,
         finished_at: finished_at,
         tags: tags.current.merge(attributes.delete(:tags) || {}),
-        window_started_at: TimeWindow.new(finished_at, configuration.window_size),
+        window_started_at: WindowStartedAt.new(finished_at, configuration.window_size).call,
         **attributes
       )
 
