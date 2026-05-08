@@ -2,8 +2,8 @@
 
 module ActiveUsage
   class Railtie < Rails::Railtie
-    initializer "activeusage.context_middleware" do |app|
-      app.middleware.use ActiveUsage::Instrumentation::ContextMiddleware
+    initializer "activeusage.middleware" do |app|
+      app.middleware.use ActiveUsage::Middleware
     end
 
     initializer "activeusage.active_job_hooks" do
