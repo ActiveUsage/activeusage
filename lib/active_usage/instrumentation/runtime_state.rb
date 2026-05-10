@@ -68,8 +68,8 @@ module ActiveUsage
         normalized = sql.dup
         normalized.gsub!(/'(?:[^']|'')*'/, "?")
         normalized.gsub!(/"([^"]*)"/, '\1')
-        normalized.gsub!(/\b\d+(?:\.\d+)?\b/, "?")
         normalized.gsub!(/\$\d+/, "?")
+        normalized.gsub!(/\b\d+(?:\.\d+)?\b/, "?")
         normalized.gsub!(/\(\s*\?(?:\s*,\s*\?)+\s*\)/, "(?)")
         normalized.gsub!(/\s+/, " ")
         normalized.strip!
