@@ -14,7 +14,7 @@ module ActiveUsage
       private
 
       def store
-        case @configuration.store
+        case @configuration.adapter
         when :active_usage
           Http.new(
             @configuration.url,

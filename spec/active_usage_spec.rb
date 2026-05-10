@@ -21,9 +21,9 @@ RSpec.describe ActiveUsage do
     end
 
     it "allows setting configuration values" do
-      described_class.configure { |c| c.store = :active_record }
+      described_class.configure { |c| c.adapter = :active_record }
 
-      expect(described_class.configuration.store).to eq(:active_record)
+      expect(described_class.configuration.adapter).to eq(:active_record)
     end
   end
 end
