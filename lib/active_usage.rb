@@ -12,6 +12,7 @@ require_relative "active_usage/configuration"
 require_relative "active_usage/type/hash"
 require_relative "active_usage/type/array"
 require_relative "active_usage/event"
+require_relative "active_usage/recorder"
 require_relative "active_usage/tags"
 require_relative "active_usage/window_started_at"
 require_relative "active_usage/event_queue"
@@ -38,7 +39,7 @@ module ActiveUsage
     end
 
     def record(type:, name:, started_at:, finished_at:, **attributes)
-      event = Event.new(
+      Recorder.new(
         type: type,
         name: name,
         started_at: started_at,
@@ -46,12 +47,7 @@ module ActiveUsage
         tags: tags.current.merge(attributes.delete(:tags) || {}),
         window_started_at: WindowStartedAt.new(finished_at, configuration.window_size).call,
         **attributes
-      )
-
-      store.record(event)
-      ActiveSupport::Notifications.instrument("activeusage.event_recorded", event: event)
-
-      event
+      ).call(store)
     end
 
     def track(name, tags: {}, &)
