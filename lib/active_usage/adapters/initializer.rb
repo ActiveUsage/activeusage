@@ -8,12 +8,12 @@ module ActiveUsage
       end
 
       def call
-        ActiveUsage::Buffer.new(store)
+        ActiveUsage::Buffer.new(adapter)
       end
 
       private
 
-      def store
+      def adapter
         case @configuration.adapter
         when :active_usage
           Http.new(
