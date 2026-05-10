@@ -25,122 +25,47 @@ module ActiveUsage
       end
     end
 
-    def initialize(adapter)
+    def initialize(adapter, batch_size: 100, flush_interval: 1.0, max_queue_size: 10_000)
       @adapter = adapter
-      @batch_size = 100
-      @flush_interval = 1.0
-      @max_queue_size = 10_000
-      @queue = Queue.new
-      @queue_mutex = Mutex.new
+      @queue = EventQueue.new(max_queue_size, batch_size)
       @flush_mutex = Mutex.new
-      @state_mutex = Mutex.new
-      @running = true
-      @dropped_events_count = 0
-      start_worker!
+      @shutdown_mutex = Mutex.new
+      @shutdown = false
+      @worker = Worker.new(flush_interval) { flush! }
       self.class.track(self)
     end
 
     def record(event)
-      queue_mutex.synchronize do
-        if queue.size >= max_queue_size
-          increment_dropped_events!
-          return event
-        end
-
-        queue << event
-      end
-
-      flush! if queue.size >= batch_size
+      @queue.push(event)
+      flush! if @queue.flush_ready?
       event
     end
 
     def clear!
       flush!
-      adapter.clear!
+      @adapter.clear!
     end
 
     def flush!
-      flush_mutex.synchronize do
-        batch = drain_queue
-        persist_batch(batch)
+      @flush_mutex.synchronize do
+        batch = @queue.drain
+        @adapter.record(batch) unless batch.empty?
       end
     end
 
     def shutdown!
-      worker_to_join = nil
+      @shutdown_mutex.synchronize do
+        return if @shutdown
 
-      state_mutex.synchronize do
-        return unless @running
-
-        @running = false
-        worker_to_join = @worker
-        @worker = nil
+        @shutdown = true
       end
 
+      @worker.stop!
       flush!
-      worker_to_join&.join(0.5)
+      @worker.join(0.5)
       flush!
-      adapter.shutdown!
+      @adapter.shutdown!
       self.class.untrack(self)
-    end
-
-    private
-
-    attr_reader :adapter,
-                :batch_size,
-                :flush_interval,
-                :max_queue_size,
-                :queue,
-                :queue_mutex,
-                :flush_mutex,
-                :state_mutex
-
-    def running?
-      state_mutex.synchronize { @running }
-    end
-
-    def dropped_events_count
-      state_mutex.synchronize { @dropped_events_count }
-    end
-
-    def queue_size
-      queue_mutex.synchronize { queue.size }
-    end
-
-    def increment_dropped_events!
-      state_mutex.synchronize { @dropped_events_count += 1 }
-    end
-
-    def start_worker!
-      @worker = Thread.new do
-        Thread.current.name = "activeusage.store" if Thread.current.respond_to?(:name=)
-        while running?
-          sleep flush_interval
-          flush!
-        end
-      rescue StandardError => e
-        puts e
-      end
-    end
-
-    def drain_queue
-      items = []
-
-      queue_mutex.synchronize do
-        while items.size < batch_size && !queue.empty?
-          items << queue.pop(true)
-        end
-      rescue ThreadError
-        nil
-      end
-
-      items
-    end
-
-    def persist_batch(batch)
-      return if batch.empty?
-
-      adapter.record(batch)
     end
   end
 end
