@@ -79,10 +79,4 @@ RSpec.describe ActiveUsage::Adapters::Http do
       expect { adapter.shutdown! }.not_to raise_error
     end
   end
-
-  describe "#flush!" do
-    it "does not raise" do
-      expect { adapter.flush! }.not_to raise_error
-    end
-  end
 end

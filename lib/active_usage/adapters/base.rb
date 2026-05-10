@@ -11,10 +11,6 @@ module ActiveUsage
         raise NotImplementedError
       end
 
-      def flush!
-        raise NotImplementedError
-      end
-
       def shutdown!
         raise NotImplementedError
       end
