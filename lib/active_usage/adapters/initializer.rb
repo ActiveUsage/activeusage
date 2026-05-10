@@ -15,7 +15,7 @@ module ActiveUsage
 
       def adapter
         case @configuration.adapter
-        when :active_usage
+        when :http
           Http.new(
             @configuration.url,
             @configuration.api_key

@@ -4,8 +4,8 @@ RSpec.describe ActiveUsage::Configuration do
   subject(:configuration) { described_class.new }
 
   describe "#adapter" do
-    it "defaults to :active_usage" do
-      expect(configuration.adapter).to eq(:active_usage)
+    it "defaults to :http" do
+      expect(configuration.adapter).to eq(:http)
     end
 
     it "can be changed" do

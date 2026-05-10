@@ -6,7 +6,7 @@ module ActiveUsage
     attr_accessor :adapter, :tags, :window_size, :api_key, :url
 
     def initialize
-      @adapter = :active_usage
+      @adapter = :http
       @tags = {}
       @window_size = 300
     end
