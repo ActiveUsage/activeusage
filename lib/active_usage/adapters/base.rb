@@ -4,7 +4,7 @@ module ActiveUsage
   module Adapters
     class Base
       def record(_events)
-        NotImplementedError
+        raise NotImplementedError
       end
 
       def clear!
