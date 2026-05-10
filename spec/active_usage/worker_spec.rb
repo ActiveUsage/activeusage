@@ -64,8 +64,25 @@ RSpec.describe ActiveUsage::Worker do
         raise "boom"
       end
       signal.pop
+      worker.stop!
 
       expect { worker.join(1) }.not_to raise_error
+    end
+
+    it "continues running after StandardError in the block" do
+      calls = 0
+      signal = Queue.new
+      worker = described_class.new(0) do
+        calls += 1
+        raise "boom" if calls == 1
+
+        signal.push(:recovered)
+      end
+      signal.pop
+      worker.stop!
+      worker.join(1)
+
+      expect(calls).to be >= 2
     end
   end
 end
