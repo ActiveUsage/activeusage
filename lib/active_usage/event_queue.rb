@@ -23,9 +23,7 @@ module ActiveUsage
     def drain
       items = []
       @mutex.synchronize do
-        while items.size < @batch_size && !@queue.empty?
-          items << @queue.pop(true)
-        end
+        items << @queue.pop(true) while items.size < @batch_size && !@queue.empty?
       rescue ThreadError
         nil
       end
