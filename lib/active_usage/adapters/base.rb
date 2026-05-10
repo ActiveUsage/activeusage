@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ActiveUsage
-  module Store
+  module Adapters
     class Base
       def record(_events)
         NotImplementedError

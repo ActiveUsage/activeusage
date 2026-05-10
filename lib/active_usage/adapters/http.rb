@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ActiveUsage
-  module Store
+  module Adapters
     class Http < Base
       class Client
         def initialize(url, api_key, events)
