@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ActiveUsage
-  class Buffer
+  class Store
     @instances_mutex = Mutex.new
     @instances = []
     @exit_hook_installed = false
@@ -113,7 +113,7 @@ module ActiveUsage
 
     def start_worker!
       @worker = Thread.new do
-        Thread.current.name = "activeusage.buffer" if Thread.current.respond_to?(:name=)
+        Thread.current.name = "activeusage.store" if Thread.current.respond_to?(:name=)
         while running?
           sleep flush_interval
           flush!

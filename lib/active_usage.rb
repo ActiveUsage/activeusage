@@ -14,7 +14,7 @@ require_relative "active_usage/type/array"
 require_relative "active_usage/event"
 require_relative "active_usage/tags"
 require_relative "active_usage/window_started_at"
-require_relative "active_usage/buffer"
+require_relative "active_usage/store"
 require_relative "active_usage/adapters/base"
 require_relative "active_usage/adapters/http"
 require_relative "active_usage/time_helpers"
@@ -46,7 +46,7 @@ module ActiveUsage
         **attributes
       )
 
-      buffer.record(event)
+      store.record(event)
       ActiveSupport::Notifications.instrument("activeusage.event_recorded", event: event)
 
       event
@@ -60,10 +60,8 @@ module ActiveUsage
       @tags ||= Tags.new(configuration.tags)
     end
 
-    private
-
-    def buffer
-      @buffer ||= Buffer.new(configuration.adapter)
+    def store
+      @store ||= Store.new(configuration.adapter)
     end
   end
 end
