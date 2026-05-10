@@ -50,6 +50,29 @@ RSpec.describe ActiveUsage::Store do
 
       expect { store.flush! }.not_to raise_error
     end
+
+    context "when the adapter raises" do
+      before { allow(adapter).to receive(:record).and_raise(StandardError, "adapter error") }
+      after { allow(adapter).to receive(:record).and_return(nil) }
+
+      it "re-raises the error" do
+        store.record(double("event"))
+
+        expect { store.flush! }.to raise_error(StandardError, "adapter error")
+      end
+
+      it "re-enqueues events so the next flush retries them" do
+        event = double("event")
+        store.record(event)
+
+        store.flush! rescue nil # rubocop:disable Style/RescueModifier
+
+        allow(adapter).to receive(:record).and_return(nil)
+        store.flush!
+
+        expect(adapter).to have_received(:record).with([event]).twice
+      end
+    end
   end
 
   describe "#clear!" do

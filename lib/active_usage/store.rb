@@ -49,7 +49,14 @@ module ActiveUsage
     def flush!
       @flush_mutex.synchronize do
         batch = @queue.drain
-        @adapter.record(batch) unless batch.empty?
+        return if batch.empty?
+
+        begin
+          @adapter.record(batch)
+        rescue StandardError
+          batch.each { |event| @queue.push(event) }
+          raise
+        end
       end
     end
 
