@@ -29,9 +29,13 @@ require_relative "active_usage/instrumentation/subscriber"
 
 # Top-level namespace for the ActiveUsage gem.
 module ActiveUsage
+  @configuration_mutex = Mutex.new
+  @store_mutex = Mutex.new
+  @tags_mutex = Mutex.new
+
   class << self
     def configuration
-      @configuration ||= Configuration.new
+      @configuration || @configuration_mutex.synchronize { @configuration ||= Configuration.new }
     end
 
     def configure
@@ -55,11 +59,11 @@ module ActiveUsage
     end
 
     def tags
-      @tags ||= Tags.new(configuration.tags)
+      @tags || @tags_mutex.synchronize { @tags ||= Tags.new(configuration.tags) }
     end
 
     def store
-      @store ||= Store.new(configuration.adapter)
+      @store || @store_mutex.synchronize { @store ||= Store.new(configuration.adapter) }
     end
   end
 end
