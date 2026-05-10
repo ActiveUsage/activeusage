@@ -8,7 +8,7 @@ module ActiveUsage
       end
 
       def call
-        Buffer.new(store)
+        ActiveUsage::Buffer.new(store)
       end
 
       private
