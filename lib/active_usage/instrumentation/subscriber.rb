@@ -3,6 +3,8 @@
 module ActiveUsage
   module Instrumentation
     class Subscriber
+      ACTION_CONTROLLER_EVENT = "process_action.action_controller"
+
       def call
         subscribe_to_sql
         subscribe_to_actions
@@ -22,25 +24,38 @@ module ActiveUsage
       end
 
       def subscribe_to_actions
-        ActiveSupport::Notifications.subscribe("process_action.action_controller") do |_name, started, finished, _id, payload|
-          if activeusage_controller?(payload)
-            ActiveUsage::Instrumentation::RuntimeState.clear_sql_state
-            next
-          end
-
-          ActiveUsage.record(
-            type: :request,
-            name: controller_action_name(payload),
-            started_at: started,
-            finished_at: finished,
-            duration_ms: duration_ms(started, finished),
-            sql_duration_ms: ActiveUsage::Instrumentation::RuntimeState.consume_runtime,
-            sql_calls: ActiveUsage::Instrumentation::RuntimeState.consume_calls,
-            allocations: payload[:allocations].to_i,
-            tags: { controller: payload[:controller], action: payload[:action] },
-            sql_queries: ActiveUsage::Instrumentation::RuntimeState.consume_sql_queries
-          )
+        ActiveSupport::Notifications.subscribe(ACTION_CONTROLLER_EVENT) do |_name, started, finished, _id, payload|
+          handle_action(started, finished, payload)
         end
+      end
+
+      def handle_action(started, finished, payload)
+        if activeusage_controller?(payload)
+          ActiveUsage::Instrumentation::RuntimeState.clear_sql_state
+          return
+        end
+
+        ActiveUsage.record(**action_event_attributes(started, finished, payload))
+      end
+
+      def action_event_attributes(started, finished, payload)
+        {
+          type: :request,
+          name: controller_action_name(payload),
+          started_at: started,
+          finished_at: finished,
+          duration_ms: duration_ms(started, finished),
+          allocations: payload[:allocations].to_i,
+          tags: { controller: payload[:controller], action: payload[:action] }
+        }.merge(sql_event_attributes)
+      end
+
+      def sql_event_attributes
+        {
+          sql_duration_ms: ActiveUsage::Instrumentation::RuntimeState.consume_runtime,
+          sql_calls: ActiveUsage::Instrumentation::RuntimeState.consume_calls,
+          sql_queries: ActiveUsage::Instrumentation::RuntimeState.consume_sql_queries
+        }
       end
 
       def controller_action_name(payload)

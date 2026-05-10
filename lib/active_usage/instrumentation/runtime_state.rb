@@ -49,48 +49,55 @@ module ActiveUsage
       def consume_sql_queries
         queries = sql_fingerprints
         ActiveSupport::IsolatedExecutionState[SQL_FINGERPRINTS_KEY] = {}
-
         queries.values
                .sort_by { |query| -query[:total_duration_ms].to_f }
                .first(MAX_SQL_QUERIES_PER_EVENT)
-               .map do |query|
-          {
-            fingerprint: query[:fingerprint],
-            total_duration_ms: query[:total_duration_ms].to_f.round(3),
-            calls: query[:calls].to_i,
-            adapter_name: query[:adapter_name]
-          }
-        end
+               .map { |query| format_sql_query(query) }
       end
 
       def accumulate_sql_fingerprint(fingerprints, payload:, duration_ms:)
-        sql = payload[:sql].to_s
-        fingerprint = normalize_sql(sql)
+        fingerprint = normalize_sql(payload[:sql].to_s)
         return fingerprints if fingerprint.empty?
 
-        entry = fingerprints[fingerprint] || {
-          fingerprint: fingerprint,
-          total_duration_ms: 0.0,
-          calls: 0,
-          adapter_name: payload[:name].to_s
-        }
-
-        entry[:total_duration_ms] += duration_ms.to_f
-        entry[:calls] += 1
-        entry[:adapter_name] = payload[:name].to_s if entry[:adapter_name].to_s.empty?
+        entry = find_or_build_entry(fingerprints, fingerprint, payload)
+        update_entry(entry, duration_ms, payload)
         fingerprints.merge(fingerprint => entry)
       end
 
       def normalize_sql(sql)
         normalized = sql.dup
-        normalized.gsub!(/'(?:[^']|'')*'/, "?") # 'string values' → ?
-        normalized.gsub!(/"([^"]*)"/, '\1') # "identifier" → identifier
-        normalized.gsub!(/\b\d+(?:\.\d+)?\b/, "?") # numbers → ?
-        normalized.gsub!(/\$\d+/, "?") # $1 $2 placeholders → ?
-        normalized.gsub!(/\(\s*\?(?:\s*,\s*\?)+\s*\)/, "(?)") # (?,?,?) → (?)
+        normalized.gsub!(/'(?:[^']|'')*'/, "?")
+        normalized.gsub!(/"([^"]*)"/, '\1')
+        normalized.gsub!(/\b\d+(?:\.\d+)?\b/, "?")
+        normalized.gsub!(/\$\d+/, "?")
+        normalized.gsub!(/\(\s*\?(?:\s*,\s*\?)+\s*\)/, "(?)")
         normalized.gsub!(/\s+/, " ")
         normalized.strip!
         normalized
+      end
+
+      def format_sql_query(query)
+        {
+          fingerprint: query[:fingerprint],
+          total_duration_ms: query[:total_duration_ms].to_f.round(3),
+          calls: query[:calls].to_i,
+          adapter_name: query[:adapter_name]
+        }
+      end
+
+      def find_or_build_entry(fingerprints, fingerprint, payload)
+        fingerprints[fingerprint] || {
+          fingerprint: fingerprint,
+          total_duration_ms: 0.0,
+          calls: 0,
+          adapter_name: payload[:name].to_s
+        }
+      end
+
+      def update_entry(entry, duration_ms, payload)
+        entry[:total_duration_ms] += duration_ms.to_f
+        entry[:calls] += 1
+        entry[:adapter_name] = payload[:name].to_s if entry[:adapter_name].to_s.empty?
       end
 
       def consume_numeric(key)
@@ -98,7 +105,8 @@ module ActiveUsage
         ActiveSupport::IsolatedExecutionState[key] = 0
         value.to_f
       end
-      private_class_method :consume_numeric
+
+      private_class_method :consume_numeric, :format_sql_query, :find_or_build_entry, :update_entry
     end
   end
 end
