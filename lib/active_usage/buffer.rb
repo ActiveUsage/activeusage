@@ -25,8 +25,8 @@ module ActiveUsage
       end
     end
 
-    def initialize(store)
-      @store = store
+    def initialize(adapter)
+      @adapter = adapter
       @batch_size = 100
       @flush_interval = 1.0
       @max_queue_size = 10_000
@@ -56,7 +56,7 @@ module ActiveUsage
 
     def clear!
       flush!
-      store.clear!
+      adapter.clear!
     end
 
     def flush!
@@ -80,13 +80,13 @@ module ActiveUsage
       flush!
       worker_to_join&.join(0.5)
       flush!
-      store.shutdown!
+      adapter.shutdown!
       self.class.untrack(self)
     end
 
     private
 
-    attr_reader :store,
+    attr_reader :adapter,
                 :batch_size,
                 :flush_interval,
                 :max_queue_size,
@@ -140,7 +140,7 @@ module ActiveUsage
     def persist_batch(batch)
       return if batch.empty?
 
-      store.record(batch)
+      adapter.record(batch)
     end
   end
 end

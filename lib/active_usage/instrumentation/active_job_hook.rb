@@ -26,7 +26,7 @@ module ActiveUsage
             tags: { queue: job.queue_name },
             sql_queries: ActiveUsage::Instrumentation::RuntimeState.consume_sql_queries
           )
-          ActiveUsage.store.flush!
+          ActiveUsage.adapter.flush!
           ActiveUsage::Instrumentation::RuntimeState.clear_sql_state
           ActiveUsage.tags.flush
         end

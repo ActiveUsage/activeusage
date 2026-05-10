@@ -4,14 +4,8 @@ RSpec.describe ActiveUsage::Configuration do
   subject(:configuration) { described_class.new }
 
   describe "#adapter" do
-    it "defaults to :http" do
-      expect(configuration.adapter).to eq(:http)
-    end
-
-    it "can be changed" do
-      configuration.adapter = :active_record
-
-      expect(configuration.adapter).to eq(:active_record)
+    it "defaults to nil" do
+      expect(configuration.adapter).to be_nil
     end
   end
 
@@ -30,18 +24,6 @@ RSpec.describe ActiveUsage::Configuration do
       configuration.window_size = 60
 
       expect(configuration.window_size).to eq(60)
-    end
-  end
-
-  describe "#api_key" do
-    it "defaults to nil" do
-      expect(configuration.api_key).to be_nil
-    end
-
-    it "can be changed" do
-      configuration.api_key = "secret"
-
-      expect(configuration.api_key).to eq("secret")
     end
   end
 end

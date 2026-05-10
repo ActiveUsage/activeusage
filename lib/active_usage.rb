@@ -17,7 +17,6 @@ require_relative "active_usage/window_started_at"
 require_relative "active_usage/buffer"
 require_relative "active_usage/adapters/base"
 require_relative "active_usage/adapters/http"
-require_relative "active_usage/adapters/initializer"
 require_relative "active_usage/time_helpers"
 require_relative "active_usage/tracker"
 require_relative "active_usage/middleware"
@@ -36,10 +35,6 @@ module ActiveUsage
       yield configuration
     end
 
-    def store
-      @store ||= Store::Initializer.new(configuration).call
-    end
-
     def record(type:, name:, started_at:, finished_at:, **attributes)
       event = Event.new(
         type: type,
@@ -51,7 +46,7 @@ module ActiveUsage
         **attributes
       )
 
-      store.record(event)
+      buffer.record(event)
       ActiveSupport::Notifications.instrument("activeusage.event_recorded", event: event)
 
       event
@@ -63,6 +58,12 @@ module ActiveUsage
 
     def tags
       @tags ||= Tags.new(configuration.tags)
+    end
+
+    private
+
+    def buffer
+      @buffer ||= Buffer.new(configuration.adapter)
     end
   end
 end
