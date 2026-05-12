@@ -5,9 +5,22 @@ module ActiveUsage
     class Subscriber
       ACTION_CONTROLLER_EVENT = "process_action.action_controller"
 
+      @subscriptions = []
+
+      class << self
+        def unsubscribe_all
+          @subscriptions.each { |s| ActiveSupport::Notifications.unsubscribe(s) }
+          @subscriptions = []
+        end
+
+        def track(subscriptions)
+          @subscriptions = subscriptions
+        end
+      end
+
       def call
-        subscribe_to_sql
-        subscribe_to_actions
+        self.class.unsubscribe_all
+        self.class.track([subscribe_to_sql, subscribe_to_actions])
       end
 
       private
