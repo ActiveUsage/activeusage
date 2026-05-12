@@ -11,10 +11,7 @@ module ActiveUsage
     attribute :started_at, :datetime
     attribute :finished_at, :datetime
     attribute :allocations, :integer
-    attribute :external_calls, :integer
     attribute :retry_count, :integer
-    attribute :cpu_time_ms, :float
-    attribute :memory_bytes, :integer
     attribute :tags, :tags
     attribute :window_started_at, :datetime
     attribute :sql_queries, :sql_queries

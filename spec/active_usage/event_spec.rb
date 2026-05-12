@@ -10,10 +10,7 @@ RSpec.describe ActiveUsage::Event do
       expect(subject.started_at).to be_nil
       expect(subject.finished_at).to be_nil
       expect(subject.allocations).to be_nil
-      expect(subject.external_calls).to be_nil
       expect(subject.retry_count).to be_nil
-      expect(subject.cpu_time_ms).to be_nil
-      expect(subject.memory_bytes).to be_nil
       expect(subject.tags).to be_nil
       expect(subject.window_started_at).to be_nil
     end
