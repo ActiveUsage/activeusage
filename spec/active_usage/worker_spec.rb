@@ -59,9 +59,18 @@ RSpec.describe ActiveUsage::Worker do
   describe "error handling" do
     let(:logger) { instance_double(Logger, error: nil) }
 
+    before do
+      @original_logger = ActiveUsage.configuration.logger
+      ActiveUsage.configuration.logger = logger
+    end
+
+    after do
+      ActiveUsage.configuration.logger = @original_logger
+    end
+
     it "does not propagate StandardError from the block" do
       signal = Queue.new
-      worker = described_class.new(0, logger: logger) do
+      worker = described_class.new(0) do
         signal.push(:before_error)
         raise "boom"
       end
@@ -71,9 +80,9 @@ RSpec.describe ActiveUsage::Worker do
       expect { worker.join(1) }.not_to raise_error
     end
 
-    it "logs the error via the provided logger" do
+    it "logs the error via the configured logger" do
       signal = Queue.new
-      worker = described_class.new(0, logger: logger) do
+      worker = described_class.new(0) do
         signal.push(:before_error)
         raise "boom"
       end
@@ -87,7 +96,7 @@ RSpec.describe ActiveUsage::Worker do
     it "continues running after StandardError in the block" do
       calls = 0
       signal = Queue.new
-      worker = described_class.new(0, logger: logger) do
+      worker = described_class.new(0) do
         calls += 1
         raise "boom" if calls == 1
 

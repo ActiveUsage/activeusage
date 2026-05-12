@@ -26,4 +26,17 @@ RSpec.describe ActiveUsage::Configuration do
       expect(configuration.window_size).to eq(60)
     end
   end
+
+  describe "#logger" do
+    it "defaults to a Logger instance" do
+      expect(configuration.logger).to respond_to(:error)
+    end
+
+    it "can be changed" do
+      custom_logger = Logger.new(IO::NULL)
+      configuration.logger = custom_logger
+
+      expect(configuration.logger).to eq(custom_logger)
+    end
+  end
 end

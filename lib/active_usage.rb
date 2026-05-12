@@ -6,6 +6,7 @@ require "active_support"
 require "json"
 require "net/http"
 require "uri"
+require "logger"
 
 require_relative "active_usage/version"
 require_relative "active_usage/configuration"
@@ -40,6 +41,10 @@ module ActiveUsage
 
     def configure
       yield configuration
+    end
+
+    def logger
+      configuration.logger
     end
 
     def record(type:, name:, started_at:, finished_at:, **attributes)

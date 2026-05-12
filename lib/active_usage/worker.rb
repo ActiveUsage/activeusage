@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
-require "logger"
-
 module ActiveUsage
   class Worker
-    def initialize(interval, logger: nil, &block)
+    def initialize(interval, &block)
       @interval = interval
       @block = block
-      @logger = logger || default_logger
       @mutex = Mutex.new
       @running = true
       start!
@@ -27,10 +24,6 @@ module ActiveUsage
       @mutex.synchronize { @running }
     end
 
-    def default_logger
-      (defined?(Rails.logger) && Rails.logger) || Logger.new($stderr)
-    end
-
     def start!
       @thread = Thread.new do
         Thread.current.name = "activeusage.worker" if Thread.current.respond_to?(:name=)
@@ -42,7 +35,7 @@ module ActiveUsage
       sleep @interval
       @block.call
     rescue StandardError => e
-      @logger.error("[ActiveUsage::Worker] #{e.class}: #{e.message}")
+      ActiveUsage.logger.error("[ActiveUsage::Worker] #{e.class}: #{e.message}")
     end
   end
 end
