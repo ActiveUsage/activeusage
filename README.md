@@ -1,43 +1,69 @@
 # ActiveUsage
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/active_usage`. To experiment with that code, run `bin/console` for an interactive prompt.
+Cost observability core for Ruby and Rails workloads. ActiveUsage turns runtime signals — request timing, SQL queries, job execution — into structured events you can ship to any backend for cost analysis.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+Add to your Gemfile:
 
-Install the gem and add to the application's Gemfile by executing:
-
-```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```ruby
+gem "activeusage"
 ```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+## Configuration
 
-```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```ruby
+ActiveUsage.configure do |config|
+  config.adapter     = ActiveUsage::Adapters::Http.new("https://your-backend.example.com/events", "your-api-key")
+  config.tags        = { env: Rails.env }
+  config.logger      = Rails.logger
+end
 ```
 
-## Usage
+## Rails integration
 
-TODO: Write usage instructions here
+With Rails, ActiveUsage auto-instruments requests and jobs via a Railtie — no extra setup needed.
 
-## Development
+**Requests** — every `process_action.action_controller` notification produces a `:request` event with timing, allocations, controller/action tags, and SQL query breakdown.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+**Jobs** — every `ActiveJob` execution produces a `:job` event with timing, retry count, queue name, and SQL query breakdown.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+**Middleware** — `ActiveUsage::Middleware` is inserted automatically to flush per-request tags.
 
-## Contributing
+## Manual tracking
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/activeusage. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/activeusage/blob/main/CODE_OF_CONDUCT.md).
+Use `ActiveUsage.track` to instrument arbitrary blocks:
 
-## License
+```ruby
+result = ActiveUsage.track("reports.generate", tags: { user_id: current_user.id }) do
+  ReportGenerator.call(params)
+end
+```
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+This produces a `:task` event with timing and SQL queries captured within the block.
 
-## Code of Conduct
+## Tags
 
-Everyone interacting in the Activeusage project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/activeusage/blob/main/CODE_OF_CONDUCT.md).
+Tags are thread-local and merged into every event recorded on the current thread:
+
+```ruby
+ActiveUsage.tags.tag(user_id: current_user.id, tenant: current_tenant.slug)
+```
+
+Tags set on the thread are flushed automatically at the end of each request by the middleware and at the start/end of each job by the hook.
+
+## Event payload
+
+Every event includes:
+
+| Field | Description |
+|---|---|
+| `type` | `:request`, `:job`, or `:task` |
+| `name` | controller action, job class name, or task name |
+| `started_at` | start timestamp |
+| `finished_at` | end timestamp |
+| `allocations` | object allocations (requests only) |
+| `retry_count` | retry count (jobs only) |
+| `tags` | merged thread-local and per-event tags |
+| `window_started_at` | start of the aggregation window bucket |
+| `sql_queries` | top SQL query fingerprints with timing and call counts |
