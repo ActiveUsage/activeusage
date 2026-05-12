@@ -31,11 +31,6 @@ module ActiveUsage
       end
 
       def handle_action(started, finished, payload)
-        if activeusage_controller?(payload)
-          ActiveUsage::Instrumentation::RuntimeState.clear_sql_state
-          return
-        end
-
         ActiveUsage.record(**action_event_attributes(started, finished, payload))
       end
 
@@ -58,10 +53,6 @@ module ActiveUsage
 
       def controller_action_name(payload)
         [payload[:controller], payload[:action]].compact.join("#")
-      end
-
-      def activeusage_controller?(payload)
-        payload[:controller].to_s.start_with?("ActiveUsage::")
       end
     end
   end
