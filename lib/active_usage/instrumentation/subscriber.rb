@@ -18,7 +18,8 @@ module ActiveUsage
 
           ActiveUsage::Instrumentation::RuntimeState.add_sql_event(
             payload,
-            duration_ms: duration_ms(started, finished)
+            started_at: started,
+            finished_at: finished
           )
         end
       end
@@ -57,10 +58,6 @@ module ActiveUsage
 
       def controller_action_name(payload)
         [payload[:controller], payload[:action]].compact.join("#")
-      end
-
-      def duration_ms(started, finished)
-        ((finished - started) * 1000.0).round(3)
       end
 
       def activeusage_controller?(payload)

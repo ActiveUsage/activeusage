@@ -12,7 +12,8 @@ module ActiveUsage
         ActiveSupport::IsolatedExecutionState[SQL_FINGERPRINTS_KEY] || {}
       end
 
-      def add_sql_event(payload, duration_ms:)
+      def add_sql_event(payload, started_at:, finished_at:)
+        duration_ms = ((finished_at - started_at) * 1000.0).round(3)
         ActiveSupport::IsolatedExecutionState[SQL_FINGERPRINTS_KEY] = accumulate_sql_fingerprint(
           sql_fingerprints,
           payload: payload,

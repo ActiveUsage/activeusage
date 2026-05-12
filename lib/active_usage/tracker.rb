@@ -25,7 +25,8 @@ module ActiveUsage
 
         Instrumentation::RuntimeState.add_sql_event(
           payload,
-          duration_ms: ((finished - started) * 1000.0).round(3)
+          started_at: started,
+          finished_at: finished
         )
       end
     end

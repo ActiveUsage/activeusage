@@ -6,10 +6,14 @@ RSpec.describe ActiveUsage::Instrumentation::RuntimeState do
 
   let(:payload) { { sql: "SELECT * FROM users WHERE id = 1", name: "User Load" } }
 
+  def add_event(payload, duration_ms:)
+    described_class.add_sql_event(payload, started_at: Time.at(0), finished_at: Time.at(duration_ms / 1000.0))
+  end
+
   describe ".add_sql_event" do
     it "accumulates fingerprints across multiple calls" do
-      described_class.add_sql_event(payload, duration_ms: 5.0)
-      described_class.add_sql_event(payload, duration_ms: 3.0)
+      add_event(payload, duration_ms: 5.0)
+      add_event(payload, duration_ms: 3.0)
 
       expect(described_class.sql_fingerprints.size).to eq(1)
     end
@@ -17,7 +21,7 @@ RSpec.describe ActiveUsage::Instrumentation::RuntimeState do
 
   describe ".clear_sql_state" do
     it "resets sql_fingerprints to empty hash" do
-      described_class.add_sql_event(payload, duration_ms: 5.0)
+      add_event(payload, duration_ms: 5.0)
       described_class.clear_sql_state
 
       expect(described_class.sql_fingerprints).to eq({})
@@ -30,7 +34,7 @@ RSpec.describe ActiveUsage::Instrumentation::RuntimeState do
     end
 
     it "returns query hashes with the expected keys" do
-      described_class.add_sql_event(payload, duration_ms: 5.0)
+      add_event(payload, duration_ms: 5.0)
 
       query = described_class.consume_sql_queries.first
 
@@ -38,8 +42,8 @@ RSpec.describe ActiveUsage::Instrumentation::RuntimeState do
     end
 
     it "sorts queries by total_duration_ms descending" do
-      described_class.add_sql_event({ sql: "SELECT 1", name: "Fast" }, duration_ms: 2.0)
-      described_class.add_sql_event({ sql: "SELECT * FROM orders", name: "Slow" }, duration_ms: 10.0)
+      add_event({ sql: "SELECT 1", name: "Fast" }, duration_ms: 2.0)
+      add_event({ sql: "SELECT * FROM orders", name: "Slow" }, duration_ms: 10.0)
 
       queries = described_class.consume_sql_queries
 
@@ -48,21 +52,21 @@ RSpec.describe ActiveUsage::Instrumentation::RuntimeState do
 
     it "limits results to MAX_SQL_QUERIES_PER_EVENT" do
       21.times do |i|
-        described_class.add_sql_event({ sql: "SELECT #{i} FROM table#{i}", name: "Load" }, duration_ms: i.to_f)
+        add_event({ sql: "SELECT #{i} FROM table#{i}", name: "Load" }, duration_ms: i.to_f)
       end
 
       expect(described_class.consume_sql_queries.size).to eq(described_class::MAX_SQL_QUERIES_PER_EVENT)
     end
 
     it "resets fingerprints after consuming" do
-      described_class.add_sql_event(payload, duration_ms: 1.0)
+      add_event(payload, duration_ms: 1.0)
       described_class.consume_sql_queries
 
       expect(described_class.sql_fingerprints).to eq({})
     end
 
     it "aggregates repeated identical queries" do
-      2.times { described_class.add_sql_event(payload, duration_ms: 5.0) }
+      2.times { add_event(payload, duration_ms: 5.0) }
 
       queries = described_class.consume_sql_queries
 
