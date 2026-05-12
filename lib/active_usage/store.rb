@@ -68,7 +68,6 @@ module ActiveUsage
       end
 
       @worker.stop!
-      flush!
       @worker.join(0.5)
       flush!
       @adapter.shutdown!
