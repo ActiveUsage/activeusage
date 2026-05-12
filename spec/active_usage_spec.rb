@@ -21,10 +21,9 @@ RSpec.describe ActiveUsage do
     end
 
     it "allows setting configuration values" do
-      adapter = instance_double(ActiveUsage::Adapters::Base, record: nil, clear!: nil, shutdown!: nil)
-      described_class.configure { |c| c.adapter = adapter }
+      described_class.configure { |c| c.adapter = :active_record }
 
-      expect(described_class.configuration.adapter).to eq(adapter)
+      expect(described_class.configuration.adapter).to eq(:active_record)
     end
   end
 
