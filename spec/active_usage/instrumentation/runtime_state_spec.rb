@@ -6,50 +6,16 @@ RSpec.describe ActiveUsage::Instrumentation::RuntimeState do
 
   let(:payload) { { sql: "SELECT * FROM users WHERE id = 1", name: "User Load" } }
 
-  describe ".sql_calls" do
-    it "returns 0 initially" do
-      expect(described_class.sql_calls).to eq(0)
-    end
-  end
-
   describe ".add_sql_event" do
-    it "increments sql_calls" do
-      described_class.add_sql_event(payload, duration_ms: 5.5)
-
-      expect(described_class.sql_calls).to eq(1)
-    end
-
-    it "accumulates across multiple calls" do
+    it "accumulates fingerprints across multiple calls" do
       described_class.add_sql_event(payload, duration_ms: 5.0)
       described_class.add_sql_event(payload, duration_ms: 3.0)
 
-      expect(described_class.sql_calls).to eq(2)
-    end
-  end
-
-  describe ".consume_calls" do
-    it "returns the accumulated call count" do
-      described_class.add_sql_event(payload, duration_ms: 1.0)
-
-      expect(described_class.consume_calls).to eq(1)
-    end
-
-    it "resets the call count to 0 after consuming" do
-      described_class.add_sql_event(payload, duration_ms: 1.0)
-      described_class.consume_calls
-
-      expect(described_class.sql_calls).to eq(0)
+      expect(described_class.sql_fingerprints.size).to eq(1)
     end
   end
 
   describe ".clear_sql_state" do
-    it "resets sql_calls to 0" do
-      described_class.add_sql_event(payload, duration_ms: 5.0)
-      described_class.clear_sql_state
-
-      expect(described_class.sql_calls).to eq(0)
-    end
-
     it "resets sql_fingerprints to empty hash" do
       described_class.add_sql_event(payload, duration_ms: 5.0)
       described_class.clear_sql_state

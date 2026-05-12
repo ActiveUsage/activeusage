@@ -37,31 +37,5 @@ RSpec.describe ActiveUsage::Tracker do
 
       expect(ActiveUsage).to have_received(:record).with(hash_including(tags: { env: "test" }))
     end
-
-    it "records sql_calls from sql events fired during the block" do
-      tracker.call do
-        ActiveSupport::Notifications.instrument("sql.active_record", sql: "SELECT 1", name: "Test") { nil }
-      end
-
-      expect(ActiveUsage).to have_received(:record).with(hash_including(sql_calls: 1))
-    end
-
-    it "does not count sql events fired outside the block" do
-      ActiveSupport::Notifications.instrument("sql.active_record", sql: "SELECT 1", name: "Test") { nil }
-
-      tracker.call { nil }
-
-      expect(ActiveUsage).to have_received(:record).with(hash_including(sql_calls: 0))
-    end
-
-    it "accumulates sql_calls from multiple sql events" do
-      tracker.call do
-        2.times do
-          ActiveSupport::Notifications.instrument("sql.active_record", sql: "SELECT 1", name: "Test") { nil }
-        end
-      end
-
-      expect(ActiveUsage).to have_received(:record).with(hash_including(sql_calls: 2))
-    end
   end
 end

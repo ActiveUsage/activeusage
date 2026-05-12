@@ -3,22 +3,16 @@
 module ActiveUsage
   module Instrumentation
     module RuntimeState
-      SQL_CALLS_KEY = :activeusage_sql_calls
       SQL_FINGERPRINTS_KEY = :activeusage_sql_fingerprints
       MAX_SQL_QUERIES_PER_EVENT = 20
 
       module_function
-
-      def sql_calls
-        ActiveSupport::IsolatedExecutionState[SQL_CALLS_KEY].to_i
-      end
 
       def sql_fingerprints
         ActiveSupport::IsolatedExecutionState[SQL_FINGERPRINTS_KEY] || {}
       end
 
       def add_sql_event(payload, duration_ms:)
-        ActiveSupport::IsolatedExecutionState[SQL_CALLS_KEY] = sql_calls + 1
         ActiveSupport::IsolatedExecutionState[SQL_FINGERPRINTS_KEY] = accumulate_sql_fingerprint(
           sql_fingerprints,
           payload: payload,
@@ -26,12 +20,7 @@ module ActiveUsage
         )
       end
 
-      def consume_calls
-        consume_numeric(SQL_CALLS_KEY).to_i
-      end
-
       def clear_sql_state
-        ActiveSupport::IsolatedExecutionState[SQL_CALLS_KEY] = 0
         ActiveSupport::IsolatedExecutionState[SQL_FINGERPRINTS_KEY] = {}
       end
 
@@ -89,13 +78,7 @@ module ActiveUsage
         entry[:adapter_name] = payload[:name].to_s if entry[:adapter_name].to_s.empty?
       end
 
-      def consume_numeric(key)
-        value = ActiveSupport::IsolatedExecutionState[key]
-        ActiveSupport::IsolatedExecutionState[key] = 0
-        value.to_f
-      end
-
-      private_class_method :consume_numeric, :format_sql_query, :find_or_build_entry, :update_entry
+      private_class_method :format_sql_query, :find_or_build_entry, :update_entry
     end
   end
 end
