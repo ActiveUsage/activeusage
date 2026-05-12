@@ -44,7 +44,6 @@ module ActiveUsage
           name: controller_action_name(payload),
           started_at: started,
           finished_at: finished,
-          duration_ms: duration_ms(started, finished),
           allocations: payload[:allocations].to_i,
           tags: { controller: payload[:controller], action: payload[:action] }
         }.merge(sql_event_attributes)
@@ -63,7 +62,7 @@ module ActiveUsage
       end
 
       def duration_ms(started, finished)
-        ActiveUsage::TimeHelpers.duration_ms(started, finished)
+        ((finished - started) * 1000.0).round(3)
       end
 
       def activeusage_controller?(payload)

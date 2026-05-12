@@ -36,7 +36,6 @@ module ActiveUsage
         name: @name,
         started_at: @started_at,
         finished_at: finished_at,
-        duration_ms: ActiveUsage::TimeHelpers.duration_ms(@started_at, finished_at),
         sql_duration_ms: @sql_duration_ms.round(3),
         sql_calls: @sql_calls,
         tags: @tags

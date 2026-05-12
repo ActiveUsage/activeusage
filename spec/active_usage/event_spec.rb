@@ -9,7 +9,6 @@ RSpec.describe ActiveUsage::Event do
       expect(subject.name).to be_nil
       expect(subject.started_at).to be_nil
       expect(subject.finished_at).to be_nil
-      expect(subject.duration_ms).to be_nil
       expect(subject.sql_duration_ms).to be_nil
       expect(subject.sql_calls).to be_nil
       expect(subject.allocations).to be_nil
@@ -27,24 +26,16 @@ RSpec.describe ActiveUsage::Event do
       event = described_class.new(
         type: "request",
         name: "GET /users",
-        duration_ms: 42.5,
         sql_calls: 3
       )
 
       expect(event.type).to eq("request")
       expect(event.name).to eq("GET /users")
-      expect(event.duration_ms).to eq(42.5)
       expect(event.sql_calls).to eq(3)
     end
   end
 
   describe "type casting" do
-    it "casts duration_ms to float" do
-      subject.duration_ms = "12"
-
-      expect(subject.duration_ms).to eq(12.0)
-    end
-
     it "casts sql_calls to integer" do
       subject.sql_calls = "5"
 
