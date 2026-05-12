@@ -50,9 +50,7 @@ module ActiveUsage
         Client.new(@url, @api_key, events).call
       end
 
-      def clear!
-        0
-      end
+      def clear!; end
 
       def shutdown!; end
     end

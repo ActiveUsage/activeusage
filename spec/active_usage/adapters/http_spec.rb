@@ -69,8 +69,8 @@ RSpec.describe ActiveUsage::Adapters::Http do
   end
 
   describe "#clear!" do
-    it "returns 0" do
-      expect(adapter.clear!).to eq(0)
+    it "returns nil" do
+      expect(adapter.clear!).to be_nil
     end
   end
 
