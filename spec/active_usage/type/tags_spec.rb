@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe ActiveUsage::Type::Hash do
+RSpec.describe ActiveUsage::Type::Tags do
   subject { described_class.new }
 
   describe "#cast" do
@@ -32,8 +32,8 @@ RSpec.describe ActiveUsage::Type::Hash do
   end
 
   describe "registration" do
-    it "is registered as :hash type in ActiveModel" do
-      expect(ActiveModel::Type.lookup(:hash)).to be_a(described_class)
+    it "is registered as :tags type in ActiveModel" do
+      expect(ActiveModel::Type.lookup(:tags)).to be_a(described_class)
     end
   end
 end

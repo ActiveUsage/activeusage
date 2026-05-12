@@ -15,7 +15,7 @@ module ActiveUsage
     attribute :retry_count, :integer
     attribute :cpu_time_ms, :float
     attribute :memory_bytes, :integer
-    attribute :tags, :hash
+    attribute :tags, :tags
     attribute :window_started_at, :datetime
     attribute :sql_queries, :array
   end

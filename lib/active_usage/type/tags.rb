@@ -2,8 +2,7 @@
 
 module ActiveUsage
   module Type
-    # ActiveModel type that casts hash values by symbolizing all keys.
-    class Hash < ActiveModel::Type::Value
+    class Tags < ActiveModel::Type::Value
       def cast(value)
         return nil unless value.is_a?(::Hash)
 
@@ -13,4 +12,4 @@ module ActiveUsage
   end
 end
 
-ActiveModel::Type.register(:hash, ActiveUsage::Type::Hash)
+ActiveModel::Type.register(:tags, ActiveUsage::Type::Tags)

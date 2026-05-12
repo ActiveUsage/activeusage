@@ -10,7 +10,7 @@ require "logger"
 
 require_relative "active_usage/version"
 require_relative "active_usage/configuration"
-require_relative "active_usage/type/hash"
+require_relative "active_usage/type/tags"
 require_relative "active_usage/type/array"
 require_relative "active_usage/event"
 require_relative "active_usage/recorder"
