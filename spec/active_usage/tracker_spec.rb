@@ -37,5 +37,23 @@ RSpec.describe ActiveUsage::Tracker do
 
       expect(ActiveUsage).to have_received(:record).with(hash_including(tags: { env: "test" }))
     end
+
+    it "captures sql_queries for events fired within the block" do
+      tracker.call do
+        ActiveSupport::Notifications.instrument("sql.active_record", sql: "SELECT 1", name: "Test") { nil }
+      end
+
+      expect(ActiveUsage).to have_received(:record).with(
+        hash_including(sql_queries: [hash_including(fingerprint: "SELECT ?", calls: 1)])
+      )
+    end
+
+    it "skips cached sql events" do
+      tracker.call do
+        ActiveSupport::Notifications.instrument("sql.active_record", sql: "SELECT 1", name: "Test", cached: true) { nil }
+      end
+
+      expect(ActiveUsage).to have_received(:record).with(hash_including(sql_queries: []))
+    end
   end
 end

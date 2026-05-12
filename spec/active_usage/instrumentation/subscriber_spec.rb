@@ -33,4 +33,57 @@ RSpec.describe ActiveUsage::Instrumentation::Subscriber do
       expect(ActiveSupport::Notifications).to have_received(:unsubscribe).with(existing)
     end
   end
+
+  describe "action tracking" do
+    before do
+      allow(ActiveSupport::Notifications).to receive(:subscribe).and_call_original
+      allow(ActiveSupport::Notifications).to receive(:unsubscribe).and_call_original
+      allow(ActiveUsage).to receive(:record)
+      described_class.new.call
+    end
+
+    after { described_class.unsubscribe_all }
+
+    it "records a request event when process_action fires" do
+      ActiveSupport::Notifications.instrument(
+        "process_action.action_controller",
+        controller: "UsersController",
+        action: "index",
+        allocations: 42
+      ) { nil }
+
+      expect(ActiveUsage).to have_received(:record).with(
+        hash_including(type: :request, name: "UsersController#index", allocations: 42)
+      )
+    end
+
+    it "includes sql_queries in the recorded event" do
+      ActiveSupport::Notifications.instrument(
+        "process_action.action_controller",
+        controller: "UsersController",
+        action: "index",
+        allocations: 0
+      ) { nil }
+
+      expect(ActiveUsage).to have_received(:record).with(hash_including(sql_queries: []))
+    end
+  end
+
+  describe "sql tracking" do
+    before do
+      allow(ActiveSupport::Notifications).to receive(:subscribe).and_call_original
+      allow(ActiveSupport::Notifications).to receive(:unsubscribe).and_call_original
+      described_class.new.call
+    end
+
+    after { described_class.unsubscribe_all }
+
+    it "skips cached sql events" do
+      ActiveSupport::Notifications.instrument(
+        "sql.active_record", sql: "SELECT 1", name: "Test", cached: true
+      ) { nil }
+
+      expect(ActiveUsage::Instrumentation::RuntimeState.sql_fingerprints).to eq({})
+    end
+  end
 end

@@ -17,6 +17,12 @@ RSpec.describe ActiveUsage::Instrumentation::RuntimeState do
 
       expect(described_class.sql_fingerprints.size).to eq(1)
     end
+
+    it "ignores events with blank SQL" do
+      described_class.add_sql_event({ sql: "   ", name: "Load" }, started_at: Time.at(0), finished_at: Time.at(0.001))
+
+      expect(described_class.sql_fingerprints).to eq({})
+    end
   end
 
   describe ".clear_sql_state" do
