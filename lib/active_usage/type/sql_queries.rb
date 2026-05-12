@@ -2,8 +2,7 @@
 
 module ActiveUsage
   module Type
-    # ActiveModel type that casts hash values by symbolizing all keys.
-    class Array < ActiveModel::Type::Value
+    class SqlQueries < ActiveModel::Type::Value
       def cast(value)
         return [] unless value.is_a?(::Array)
 
@@ -13,4 +12,4 @@ module ActiveUsage
   end
 end
 
-ActiveModel::Type.register(:array, ActiveUsage::Type::Array)
+ActiveModel::Type.register(:sql_queries, ActiveUsage::Type::SqlQueries)

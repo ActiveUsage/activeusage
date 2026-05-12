@@ -17,6 +17,6 @@ module ActiveUsage
     attribute :memory_bytes, :integer
     attribute :tags, :tags
     attribute :window_started_at, :datetime
-    attribute :sql_queries, :array
+    attribute :sql_queries, :sql_queries
   end
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe ActiveUsage::Type::Array do
+RSpec.describe ActiveUsage::Type::SqlQueries do
   subject { described_class.new }
 
   describe "#cast" do
@@ -30,8 +30,8 @@ RSpec.describe ActiveUsage::Type::Array do
   end
 
   describe "registration" do
-    it "is registered as :array type in ActiveModel" do
-      expect(ActiveModel::Type.lookup(:array)).to be_a(described_class)
+    it "is registered as :sql_queries type in ActiveModel" do
+      expect(ActiveModel::Type.lookup(:sql_queries)).to be_a(described_class)
     end
   end
 end
