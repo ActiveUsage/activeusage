@@ -54,7 +54,7 @@ RSpec.describe ActiveUsage::Tracker do
       expect(ActiveUsage).to have_received(:record).with(hash_including(sql_calls: 0))
     end
 
-    it "accumulates sql_duration_ms from multiple sql events" do
+    it "accumulates sql_calls from multiple sql events" do
       tracker.call do
         2.times do
           ActiveSupport::Notifications.instrument("sql.active_record", sql: "SELECT 1", name: "Test") { nil }

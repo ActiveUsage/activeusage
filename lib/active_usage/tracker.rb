@@ -7,7 +7,6 @@ module ActiveUsage
       @tags = tags
 
       @started_at = Time.current
-      @sql_duration_ms = 0.0
       @sql_calls = 0
     end
 
@@ -22,12 +21,7 @@ module ActiveUsage
     private
 
     def sql_listener
-      lambda do |*args|
-        event = ActiveSupport::Notifications::Event.new(*args)
-
-        @sql_duration_ms += event.duration
-        @sql_calls += 1
-      end
+      ->(*_args) { @sql_calls += 1 }
     end
 
     def attributes
@@ -36,7 +30,6 @@ module ActiveUsage
         name: @name,
         started_at: @started_at,
         finished_at: finished_at,
-        sql_duration_ms: @sql_duration_ms.round(3),
         sql_calls: @sql_calls,
         tags: @tags
       }

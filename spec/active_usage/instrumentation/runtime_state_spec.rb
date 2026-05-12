@@ -6,12 +6,6 @@ RSpec.describe ActiveUsage::Instrumentation::RuntimeState do
 
   let(:payload) { { sql: "SELECT * FROM users WHERE id = 1", name: "User Load" } }
 
-  describe ".sql_runtime" do
-    it "returns 0.0 initially" do
-      expect(described_class.sql_runtime).to eq(0.0)
-    end
-  end
-
   describe ".sql_calls" do
     it "returns 0 initially" do
       expect(described_class.sql_calls).to eq(0)
@@ -19,12 +13,6 @@ RSpec.describe ActiveUsage::Instrumentation::RuntimeState do
   end
 
   describe ".add_sql_event" do
-    it "accumulates sql_runtime" do
-      described_class.add_sql_event(payload, duration_ms: 5.5)
-
-      expect(described_class.sql_runtime).to eq(5.5)
-    end
-
     it "increments sql_calls" do
       described_class.add_sql_event(payload, duration_ms: 5.5)
 
@@ -35,23 +23,7 @@ RSpec.describe ActiveUsage::Instrumentation::RuntimeState do
       described_class.add_sql_event(payload, duration_ms: 5.0)
       described_class.add_sql_event(payload, duration_ms: 3.0)
 
-      expect(described_class.sql_runtime).to eq(8.0)
       expect(described_class.sql_calls).to eq(2)
-    end
-  end
-
-  describe ".consume_runtime" do
-    it "returns the accumulated runtime" do
-      described_class.add_sql_event(payload, duration_ms: 10.0)
-
-      expect(described_class.consume_runtime).to eq(10.0)
-    end
-
-    it "resets the runtime to 0 after consuming" do
-      described_class.add_sql_event(payload, duration_ms: 10.0)
-      described_class.consume_runtime
-
-      expect(described_class.sql_runtime).to eq(0.0)
     end
   end
 
@@ -71,13 +43,6 @@ RSpec.describe ActiveUsage::Instrumentation::RuntimeState do
   end
 
   describe ".clear_sql_state" do
-    it "resets sql_runtime to 0.0" do
-      described_class.add_sql_event(payload, duration_ms: 5.0)
-      described_class.clear_sql_state
-
-      expect(described_class.sql_runtime).to eq(0.0)
-    end
-
     it "resets sql_calls to 0" do
       described_class.add_sql_event(payload, duration_ms: 5.0)
       described_class.clear_sql_state
@@ -116,7 +81,7 @@ RSpec.describe ActiveUsage::Instrumentation::RuntimeState do
     end
 
     it "limits results to MAX_SQL_QUERIES_PER_EVENT" do
-      7.times do |i|
+      21.times do |i|
         described_class.add_sql_event({ sql: "SELECT #{i} FROM table#{i}", name: "Load" }, duration_ms: i.to_f)
       end
 

@@ -51,7 +51,6 @@ module ActiveUsage
 
       def sql_event_attributes
         {
-          sql_duration_ms: ActiveUsage::Instrumentation::RuntimeState.consume_runtime,
           sql_calls: ActiveUsage::Instrumentation::RuntimeState.consume_calls,
           sql_queries: ActiveUsage::Instrumentation::RuntimeState.consume_sql_queries
         }

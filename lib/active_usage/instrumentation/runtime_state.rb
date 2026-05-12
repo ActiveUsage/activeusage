@@ -3,16 +3,11 @@
 module ActiveUsage
   module Instrumentation
     module RuntimeState
-      SQL_RUNTIME_KEY = :activeusage_sql_runtime
       SQL_CALLS_KEY = :activeusage_sql_calls
       SQL_FINGERPRINTS_KEY = :activeusage_sql_fingerprints
-      MAX_SQL_QUERIES_PER_EVENT = 5
+      MAX_SQL_QUERIES_PER_EVENT = 20
 
       module_function
-
-      def sql_runtime
-        ActiveSupport::IsolatedExecutionState[SQL_RUNTIME_KEY].to_f
-      end
 
       def sql_calls
         ActiveSupport::IsolatedExecutionState[SQL_CALLS_KEY].to_i
@@ -23,7 +18,6 @@ module ActiveUsage
       end
 
       def add_sql_event(payload, duration_ms:)
-        ActiveSupport::IsolatedExecutionState[SQL_RUNTIME_KEY] = sql_runtime + duration_ms.to_f
         ActiveSupport::IsolatedExecutionState[SQL_CALLS_KEY] = sql_calls + 1
         ActiveSupport::IsolatedExecutionState[SQL_FINGERPRINTS_KEY] = accumulate_sql_fingerprint(
           sql_fingerprints,
@@ -32,16 +26,11 @@ module ActiveUsage
         )
       end
 
-      def consume_runtime
-        consume_numeric(SQL_RUNTIME_KEY)
-      end
-
       def consume_calls
         consume_numeric(SQL_CALLS_KEY).to_i
       end
 
       def clear_sql_state
-        ActiveSupport::IsolatedExecutionState[SQL_RUNTIME_KEY] = 0.0
         ActiveSupport::IsolatedExecutionState[SQL_CALLS_KEY] = 0
         ActiveSupport::IsolatedExecutionState[SQL_FINGERPRINTS_KEY] = {}
       end

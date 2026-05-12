@@ -9,7 +9,6 @@ RSpec.describe ActiveUsage::Event do
       expect(subject.name).to be_nil
       expect(subject.started_at).to be_nil
       expect(subject.finished_at).to be_nil
-      expect(subject.sql_duration_ms).to be_nil
       expect(subject.sql_calls).to be_nil
       expect(subject.allocations).to be_nil
       expect(subject.external_calls).to be_nil

@@ -10,7 +10,6 @@ module ActiveUsage
     attribute :name, :string
     attribute :started_at, :datetime
     attribute :finished_at, :datetime
-    attribute :sql_duration_ms, :float
     attribute :sql_calls, :integer
     attribute :allocations, :integer
     attribute :external_calls, :integer
