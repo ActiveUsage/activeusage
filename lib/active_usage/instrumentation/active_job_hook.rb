@@ -13,12 +13,11 @@ module ActiveUsage
 
           block.call
         ensure
-          finished_at = Time.current
           ActiveUsage.record(
             type: :job,
             name: job.class.name,
             started_at: started_at,
-            finished_at: finished_at,
+            finished_at: Time.current,
             retry_count: job.respond_to?(:executions) ? job.executions.to_i - 1 : 0,
             tags: { queue: job.queue_name },
             sql_queries: ActiveUsage::Instrumentation::RuntimeState.consume_sql_queries
