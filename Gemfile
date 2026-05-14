@@ -12,4 +12,4 @@ gem "activejob"
 gem "rspec", "~> 3.0"
 gem "simplecov", require: false
 
-gem "rubocop", "~> 1.21"
+gem "rubocop", "~> 1.86"
