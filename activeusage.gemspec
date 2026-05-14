@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "ActiveUsage turns runtime signals into practical cost estimates for requests, jobs, and tasks."
   spec.homepage = "https://activeusage.com"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.1.0"
+  spec.required_ruby_version = ">= 3.2.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/ActiveUsage/activeusage/tree/#{ActiveUsage::VERSION}"
